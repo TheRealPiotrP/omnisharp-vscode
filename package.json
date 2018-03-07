@@ -36,7 +36,7 @@
     "test:integration": "npm-run-all test:integration:*",
     "test:integration:singleCsproj": "cross-env OSVC_SUITE=singleCsproj npm run test:runSuiteInVsCode",
     "test:integration:slnWithCsproj": "cross-env OSVC_SUITE=slnWithCsproj npm run test:runSuiteInVsCode",
-    "test:runSuiteInVsCode": "cross-env CODE_TESTS_PATH=./out/test/integrationTests CODE_TESTS_WORKSPACE=./test/integrationTests/testAssets/$OSVC_SUITE npm run test:runInVsCode",
+    "test:runSuiteInVsCode": "cross-env CODE_TESTS_PATH=./out/test/integrationTests CODE_TESTS_WORKSPACE=./test/integrationTests/testAssets/emptyProject npm run test:runInVsCode",
     "test:runInVsCode": "node ./test/runVsCodeTestsWithAbsolutePaths.js",
     "postinstall": "node ./node_modules/vscode/bin/install"
   },

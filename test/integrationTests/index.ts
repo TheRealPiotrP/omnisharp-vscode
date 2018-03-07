@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from "fs";
-
+import * as vscode from "vscode";
 import { SubscribeToAllLoggers } from "../../src/logger";
+
+let path=require('path');
 
 //
 // PLEASE DO NOT MODIFY / DELETE UNLESS YOU KNOW WHAT YOU ARE DOING
@@ -20,6 +22,7 @@ import { SubscribeToAllLoggers } from "../../src/logger";
 // a possible error to the callback or null if none.
 
 import * as IstanbulTestRunner from '../istanbulTestRunner';
+import { Uri } from "vscode";
 
 let testRunner: any = IstanbulTestRunner;
 
@@ -45,5 +48,9 @@ if (process.env.OSVC_SUITE) {
 
     SubscribeToAllLoggers(message => fs.appendFileSync(logFilePath, message));
 }
+
+let testAssetPath = path.join(process.cwd(), "test/integrationTests/testAssets", process.env["OSVC_SUITE"]);
+let uri = Uri.parse(testAssetPath);
+export const ensureTestProjectFolderIsOpen = vscode.commands.executeCommand("vscode.openFolder", uri);
 
 module.exports = testRunner;

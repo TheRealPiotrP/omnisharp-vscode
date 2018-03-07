@@ -12,6 +12,8 @@ import istanbul = require('istanbul');
 let glob = require('glob');
 let remapIstanbul = require('remap-istanbul');
 
+import { ensureTestProjectFolderIsOpen } from './integrationTests/index';
+
 // Linux: prevent a weird NPE when mocha on Linux requires the window size from the TTY
 // Since we are not running in a tty environment, we just implement the method statically
 let tty = require('tty');
@@ -72,8 +74,11 @@ function run(testsRoot, clb): any {
             // Run the tests
             let failureCount = 0;
 
-            mocha.run((failureCount: number) => {
-                clb(undefined, failureCount);
+            ensureTestProjectFolderIsOpen
+                .then(() => {
+                    mocha.run((failureCount: number) => {
+                        clb(undefined, failureCount);
+                });
             });
         } catch (error) {
             return clb(error);
