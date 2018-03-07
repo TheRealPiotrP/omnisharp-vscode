@@ -14,8 +14,9 @@
 // host can call to run the tests. The test runner is expected to use console.log
 // to report the results back to the caller. When the tests are finished, return
 // a possible error to the callback or null if none.
+import * as IstanbulTestRunner from '../istanbulTestRunner';
 
-let testRunner = require('vscode/lib/testrunner');
+let testRunner: any = IstanbulTestRunner;
 
 // You can directly control Mocha options by uncommenting the following lines
 // See https://github.com/mochajs/mocha/wiki/Using-mocha-programmatically#set-options for more info
@@ -24,6 +25,10 @@ testRunner.configure({
     timeout: 10000,
     ui: 'tdd',      // the TDD UI is being used in extension.test.ts (suite, test, etc.)
     useColors: true // colored output from test results
+},
+// Coverage configuration options
+{
+    coverConfig: '../../../coverconfig.json'
 });
 
 module.exports = testRunner;
