@@ -11,7 +11,6 @@ import * as del from 'del';
 import * as fs from 'fs';
 import * as gulp from 'gulp';
 import * as path from 'path';
-import * as unzip from 'unzip2';
 import * as util from '../src/common';
 import spawnNode from '../tasks/spawnNode';
 import { codeExtensionPath, offlineVscodeignorePath, vscodeignorePath, vscePath, packedVsixOutputRoot } from '../tasks/projectPaths';
