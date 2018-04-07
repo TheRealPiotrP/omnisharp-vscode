@@ -150,6 +150,8 @@ export class ProjectJSONContribution implements IJSONContribution {
                         result.error(error);
                     });
                 }
+
+                return undefined;
             }, error => {
                 result.error(error);
             });

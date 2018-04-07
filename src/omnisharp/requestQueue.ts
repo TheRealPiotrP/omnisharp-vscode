@@ -159,15 +159,15 @@ export class RequestQueueCollection {
 
     public drain() {
         if (this._isProcessing) {
-            return false;
+            return;
         }
 
         if (this._priorityQueue.isFull()) {
-            return false;
+            return;
         }
 
         if (this._normalQueue.isFull() && this._deferredQueue.isFull()) {
-            return false;
+            return;
         }
 
         this._isProcessing = true;

@@ -536,6 +536,8 @@ export function addAssetsIfNecessary(server: OmniSharpServer): Promise<AddAssetR
                     });
                 });
             }
+
+            return undefined;
         }).catch(err =>
             reject(err));
     });

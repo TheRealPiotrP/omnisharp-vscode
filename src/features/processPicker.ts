@@ -410,6 +410,8 @@ export class PsOutputParser {
             const cmdline = matches[3].trim();
             return new Process(executable, pid, cmdline);
         }
+
+        return undefined;
     }
 }
 

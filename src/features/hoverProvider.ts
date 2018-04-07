@@ -25,6 +25,8 @@ export default class OmniSharpHoverProvider extends AbstractSupport implements H
                 let contents = [documentation, { language: 'csharp', value: value.Type }];
                 return new Hover(contents);
             }
+
+            return undefined;
         });
     }
 }

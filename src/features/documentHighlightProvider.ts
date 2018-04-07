@@ -23,6 +23,8 @@ export default class OmnisharpDocumentHighlightProvider extends AbstractSupport 
             if (res && Array.isArray(res.QuickFixes)) {
                 return res.QuickFixes.map(OmnisharpDocumentHighlightProvider._asDocumentHighlight);
             }
+
+            return undefined;
         });
     }
 

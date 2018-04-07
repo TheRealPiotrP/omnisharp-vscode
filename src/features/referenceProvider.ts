@@ -23,6 +23,8 @@ export default class OmnisharpReferenceProvider extends AbstractSupport implemen
             if (res && Array.isArray(res.QuickFixes)) {
                 return res.QuickFixes.map(toLocation);
             }
+
+            return undefined;
         });
     }
 }

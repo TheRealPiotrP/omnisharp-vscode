@@ -20,6 +20,8 @@ export default class OmnisharpWorkspaceSymbolProvider extends AbstractSupport im
             if (res && Array.isArray(res.QuickFixes)) {
                 return res.QuickFixes.map(OmnisharpWorkspaceSymbolProvider._asSymbolInformation);
             }
+
+            return undefined;
         });
     }
 

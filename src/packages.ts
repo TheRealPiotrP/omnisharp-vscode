@@ -160,9 +160,10 @@ function maybeDownloadPackage(pkg: Package, eventStream: EventStream, status: St
     return doesPackageTestPathExist(pkg).then((exists: boolean) => {
         if (!exists) {
             return downloadPackage(pkg, eventStream, status, proxy, strictSSL);
-        } else {
-            eventStream.post(new DownloadSuccess(`Skipping package '${pkg.description}' (already downloaded).`));
         }
+
+        eventStream.post(new DownloadSuccess(`Skipping package '${pkg.description}' (already downloaded).`));
+        return undefined;
     });
 }
 

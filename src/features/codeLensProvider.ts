@@ -99,7 +99,7 @@ export default class OmniSharpCodeLensProvider extends AbstractProvider implemen
 
             return serverUtils.findUsages(this._server, req, token).then(res => {
                 if (!res || !Array.isArray(res.QuickFixes)) {
-                    return;
+                    return undefined;
                 }
 
                 let len = res.QuickFixes.length;
@@ -112,6 +112,8 @@ export default class OmniSharpCodeLensProvider extends AbstractProvider implemen
                 return codeLens;
             });
         }
+
+        return undefined;
     }
 
     private async  _updateCodeLensForTest(bucket: vscode.CodeLens[], fileName: string, node: protocol.Node): Promise<void> {

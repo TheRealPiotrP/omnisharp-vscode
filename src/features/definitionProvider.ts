@@ -54,13 +54,15 @@ export default class CSharpDefinitionProvider extends AbstractSupport implements
                     TypeName: metadataSource.TypeName
                 }).then(metadataResponse => {
                     if (!metadataResponse || !metadataResponse.Source || !metadataResponse.SourceName) {
-                        return;
+                        return undefined;
                     }
 
                     const uri: Uri = this._definitionMetadataDocumentProvider.addMetadataResponse(metadataResponse);
                     return new Location(uri, new Position(gotoDefinitionResponse.Line - 1, gotoDefinitionResponse.Column - 1));
                 });
             }
+
+            return undefined;
         });
     }
 }

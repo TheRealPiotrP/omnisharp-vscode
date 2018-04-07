@@ -84,6 +84,8 @@ function pickProjectAndStart(server: OmniSharpServer) {
             if (launchTarget) {
                 return server.restart(launchTarget);
             }
+
+            return undefined;
         });
     });
 }
@@ -142,6 +144,8 @@ export function dotnetRestoreAllProjects(server: OmniSharpServer, eventStream: E
             if (command) {
                 return command.execute();
             }
+
+            return undefined;
         });
     });
 }
@@ -165,6 +169,8 @@ export function dotnetRestoreForProject(server: OmniSharpServer, filePath: strin
                 return dotnetRestore(descriptor.Directory, eventStream, filePath);
             }
         }
+
+        return undefined;
     });
 }
 

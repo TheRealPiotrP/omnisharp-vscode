@@ -17,7 +17,7 @@ export default class CSharpImplementationProvider extends AbstractSupport implem
 
         return serverUtils.findImplementations(this._server, request, token).then(response => {
             if (!response || !response.QuickFixes) {
-                return;
+                return undefined;
             }
 
             return response.QuickFixes.map(fix => toLocation(fix));

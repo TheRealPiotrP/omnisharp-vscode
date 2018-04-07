@@ -7,7 +7,8 @@
 			"es6"
 		],
 		"inlineSourceMap": true,
-		"moduleResolution": "node"
+		"moduleResolution": "node",
+		"noImplicitReturns": true
 	},
 	"exclude": [
 		"syntaxes",

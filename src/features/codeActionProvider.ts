@@ -38,7 +38,7 @@ export default class CodeActionProvider extends AbstractProvider implements vsco
 
     public provideCodeActions(document: vscode.TextDocument, range: vscode.Range, context: vscode.CodeActionContext, token: vscode.CancellationToken): Promise<vscode.Command[]> {
         if (this._options.disableCodeActions) {
-            return;
+            return undefined;
         }
 
         let line: number;
@@ -178,6 +178,8 @@ export default class CodeActionProvider extends AbstractProvider implements vsco
                         })
                  : next;
                 }
+
+                return undefined;
             }, (error) => {
             return Promise.reject(`Problem invoking 'RunCodeAction' on OmniSharp server: ${error}`);
         });

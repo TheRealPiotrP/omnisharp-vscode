@@ -46,7 +46,7 @@ export default class OmniSharpCompletionItemProvider extends AbstractSupport imp
         return serverUtils.autoComplete(this._server, req).then(responses => {
 
             if (!responses) {
-                return;
+                return undefined;
             }
 
             let result: CompletionItem[] = [];

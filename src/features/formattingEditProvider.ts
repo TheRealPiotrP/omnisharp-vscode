@@ -26,6 +26,8 @@ export default class FormattingSupport extends AbstractSupport implements Docume
             if (res && Array.isArray(res.Changes)) {
                 return res.Changes.map(FormattingSupport._asEditOptionation);
             }
+
+            return undefined;
         });
     }
 
@@ -42,6 +44,8 @@ export default class FormattingSupport extends AbstractSupport implements Docume
             if (res && Array.isArray(res.Changes)) {
                 return res.Changes.map(FormattingSupport._asEditOptionation);
             }
+
+            return undefined;
         });
     }
 

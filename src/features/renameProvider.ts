@@ -22,7 +22,7 @@ export default class OmnisharpRenameProvider extends AbstractSupport implements 
         return serverUtils.rename(this._server, req, token).then(response => {
 
             if (!response) {
-                return;
+                return undefined;
             }
 
             const edit = new WorkspaceEdit();
