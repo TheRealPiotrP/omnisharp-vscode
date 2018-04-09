@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from '../vscodeAdapter';
-import { Logger } from "../logger";
 import { BaseEvent } from '../omnisharp/loggingEvents';
+import { Logger } from "../logger";
 
 export abstract class BaseLoggerObserver {
     public logger: Logger;

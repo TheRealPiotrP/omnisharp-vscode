@@ -519,7 +519,7 @@ export class OmniSharpServer {
         });
 
         const promise = new Promise<void>((resolve, reject) => {
-            let listener: vscode.Disposable;
+            let listener: Disposable;
 
             // Convert the timeout from the seconds to milliseconds, which is required by setTimeout().
             const timeoutDuration = this._options.projectLoadTimeout * 1000;

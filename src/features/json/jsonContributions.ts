@@ -3,13 +3,26 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Location, getLocation, createScanner, SyntaxKind } from 'jsonc-parser';
-import { ProjectJSONContribution } from './projectJSONContribution';
-import { configure as configureXHR, xhr } from 'request-light';
+import * as jsonc from 'jsonc-parser'; 
+import { ProjectJSONContribution } from './projectJSONContribution'; 
+import { configure as configureXHR, xhr } from 'request-light'; 
 
 import {
-    CompletionItem, CompletionItemProvider, CompletionList, TextDocument, Position, Hover, HoverProvider,
-    CancellationToken, Range, TextEdit, MarkedString, DocumentSelector, languages, workspace, Disposable
+    CancellationToken,
+    CompletionItem,
+    CompletionItemProvider,
+    CompletionList,
+    Disposable,
+    DocumentSelector,
+    Hover,
+    HoverProvider,
+    MarkedString,
+    Position,
+    Range,
+    TextDocument,
+    TextEdit,
+    languages,
+    workspace
 } from 'vscode';
 
 export interface ISuggestionsCollector {
@@ -21,9 +34,9 @@ export interface ISuggestionsCollector {
 
 export interface IJSONContribution {
     getDocumentSelector(): DocumentSelector;
-    getInfoContribution(fileName: string, location: Location): Thenable<MarkedString[]>;
-    collectPropertySuggestions(fileName: string, location: Location, currentWord: string, addValue: boolean, isLast: boolean, result: ISuggestionsCollector): Thenable<void>;
-    collectValueSuggestions(fileName: string, location: Location, result: ISuggestionsCollector): Thenable<void>;
+    getInfoContribution(fileName: string, location: jsonc.Location): Thenable<MarkedString[]>;
+    collectPropertySuggestions(fileName: string, location: jsonc.Location, currentWord: string, addValue: boolean, isLast: boolean, result: ISuggestionsCollector): Thenable<void>;
+    collectValueSuggestions(fileName: string, location: jsonc.Location, result: ISuggestionsCollector): Thenable<void>;
     collectDefaultSuggestions(fileName: string, result: ISuggestionsCollector): Thenable<void>;
     resolveSuggestion?(item: CompletionItem): Thenable<CompletionItem>;
 }
@@ -59,7 +72,7 @@ export class JSONHoverProvider implements HoverProvider {
 
     public provideHover(document: TextDocument, position: Position, token: CancellationToken): Thenable<Hover> {
         let offset = document.offsetAt(position);
-        let location = getLocation(document.getText(), offset);
+        let location = jsonc.getLocation(document.getText(), offset);
         let node = location.previousNode;
         if (node && node.offset <= offset && offset <= node.offset + node.length) {
             let promise = this.jsonContribution.getInfoContribution(document.fileName, location);
@@ -100,7 +113,7 @@ export class JSONCompletionItemProvider implements CompletionItemProvider {
         let isIncomplete = false;
 
         let offset = document.offsetAt(position);
-        let location = getLocation(document.getText(), offset);
+        let location = jsonc.getLocation(document.getText(), offset);
 
         let node = location.previousNode;
         if (node && node.offset <= offset && offset <= node.offset + node.length && (node.type === 'property' || node.type === 'string' || node.type === 'number' || node.type === 'boolean' || node.type === 'null')) {
@@ -130,10 +143,10 @@ export class JSONCompletionItemProvider implements CompletionItemProvider {
 
         if (location.isAtPropertyKey) {
             let addValue = !location.previousNode || !location.previousNode.columnOffset && (offset == (location.previousNode.offset + location.previousNode.length));
-            let scanner = createScanner(document.getText(), true);
+            let scanner = jsonc.createScanner(document.getText(), true);
             scanner.setPosition(offset);
             scanner.scan();
-            let isLast = scanner.getToken() === SyntaxKind.CloseBraceToken || scanner.getToken() === SyntaxKind.EOF;
+            let isLast = scanner.getToken() === jsonc.SyntaxKind.CloseBraceToken || scanner.getToken() === jsonc.SyntaxKind.EOF;
             collectPromise = this.jsonContribution.collectPropertySuggestions(document.fileName, location, currentWord, addValue, isLast, collector);
         } else {
             if (location.path.length === 0) {

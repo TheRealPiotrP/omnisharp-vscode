@@ -5,10 +5,6 @@
 
 import * as utils from './utils';
 import * as vscode from 'vscode';
-import { AddAssetResult, addAssetsIfNecessary } from '../assets';
-import reportDiagnostics, { Advisor } from '../features/diagnosticsProvider';
-import { safeLength, sum } from '../common';
-import { CSharpConfigurationProvider } from '../configurationProvider';
 import CodeActionProvider from '../features/codeActionProvider';
 import CodeLensProvider from '../features/codeLensProvider';
 import CompletionItemProvider from '../features/completionItemProvider';
@@ -17,24 +13,28 @@ import DefinitionProvider from '../features/definitionProvider';
 import DocumentHighlightProvider from '../features/documentHighlightProvider';
 import DocumentSymbolProvider from '../features/documentSymbolProvider';
 import FormatProvider from '../features/formattingEditProvider';
+import forwardChanges from '../features/changeForwarding';
 import HoverProvider from '../features/hoverProvider';
 import ImplementationProvider from '../features/implementationProvider';
-import { OmniSharpServer } from './server';
-import { Options } from './options';
 import ReferenceProvider from '../features/referenceProvider';
+import registerCommands from '../features/commands';
 import RenameProvider from '../features/renameProvider';
+import reportDiagnostics, { Advisor } from '../features/diagnosticsProvider';
 import SignatureHelpProvider from '../features/signatureHelpProvider';
 import TestManager from '../features/dotnetTest';
 import WorkspaceSymbolProvider from '../features/workspaceSymbolProvider';
-import forwardChanges from '../features/changeForwarding';
-import registerCommands from '../features/commands';
-import { PlatformInformation } from '../platform';
-import { ProjectJsonDeprecatedWarning, OmnisharpStart } from './loggingEvents';
+import { AddAssetResult, addAssetsIfNecessary } from '../assets';
+import { CSharpConfigurationProvider } from '../configurationProvider';
 import { EventStream } from '../EventStream';
+import { OmniSharpServer } from './server';
+import { OmnisharpStart, ProjectJsonDeprecatedWarning } from './loggingEvents';
+import { Options } from './options';
+import { PlatformInformation } from '../platform';
+import { safeLength, sum } from '../common';
 
 export let omnisharp: OmniSharpServer;
 
-export async function activate(context: vscode.ExtensionContext, eventStream: EventStream, packageJSON: any, platformInfo: PlatformInformation) {
+export async function activateExtension(context: vscode.ExtensionContext, eventStream: EventStream, packageJSON: any, platformInfo: PlatformInformation) {
     const documentSelector: vscode.DocumentSelector = {
         language: 'csharp',
         scheme: 'file' // only files from disk

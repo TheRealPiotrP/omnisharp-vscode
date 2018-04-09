@@ -3,7 +3,8 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs-extra';
+import * as fsExtra from 'fs-extra';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as protocol from './omnisharp/protocol';
 import * as serverUtils from './omnisharp/utils';
@@ -529,7 +530,7 @@ export async function addAssetsIfNecessary(server: OmniSharpServer): Promise<Add
                             return resolve(AddAssetResult.Cancelled);
                         }
 
-                        fs.ensureDir(generator.vscodeFolder, err => {
+                        fsExtra.ensureDir(generator.vscodeFolder, err => {
                             addAssets(generator, operations).then(() =>
                                 resolve(AddAssetResult.Done));
                         });
@@ -598,7 +599,7 @@ export async function generateAssets(server: OmniSharpServer) {
         if (hasAddOperations(operations)) {
             let doGenerateAssets = await shouldGenerateAssets(generator);
             if (doGenerateAssets) {
-                await fs.ensureDir(generator.vscodeFolder);
+                await fsExtra.ensureDir(generator.vscodeFolder);
                 await addAssets(generator, operations);
             }
         }

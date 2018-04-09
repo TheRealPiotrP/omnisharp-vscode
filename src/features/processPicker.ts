@@ -4,11 +4,10 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as child_process from 'child_process';
-import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-
+import * as fs from 'async-file';
 import { PlatformInformation } from '../platform';
 import { getExtensionPath } from '../common';
 
@@ -57,32 +56,31 @@ export class RemoteAttachPicker {
     private static _channel: vscode.OutputChannel = null;
 
     public static async ValidateAndFixPipeProgram(program: string): Promise<string> {
-        return PlatformInformation.GetCurrent().then(platformInfo => {
-            // Check if we are on a 64 bit Windows
-            if (platformInfo.isWindows() && platformInfo.architecture === "x86_64") {
-                let sysRoot: string = process.env.SystemRoot;
-                let oldPath = path.join(sysRoot, 'System32');
-                let newPath = path.join(sysRoot, 'sysnative');
+        const platformInfo = await PlatformInformation.GetCurrent();
+        // Check if we are on a 64 bit Windows
+        if (platformInfo.isWindows() && platformInfo.architecture === "x86_64") {
+            let sysRoot: string = process.env.SystemRoot;
+            let oldPath = path.join(sysRoot, 'System32');
+            let newPath = path.join(sysRoot, 'sysnative');
 
-                // Escape backslashes, replace and ignore casing
-                let regex = RegExp(oldPath.replace(/\\/g, '\\\\'), "ig");
+            // Escape backslashes, replace and ignore casing
+            let regex = RegExp(oldPath.replace(/\\/g, '\\\\'), "ig");
 
-                // Replace System32 with sysnative
-                let newProgram = program.replace(regex, newPath);
+            // Replace System32 with sysnative
+            let newProgram = program.replace(regex, newPath);
 
-                // Check if program strong contains System32 directory.
-                // And if the program does not exist in System32, but it does in sysnative.
-                // Return sysnative program
-                if (program.toLowerCase().startsWith(oldPath.toLowerCase()) &&
-                    !fs.existsSync(program) && fs.existsSync(newProgram)) {
+            // Check if program strong contains System32 directory.
+            // And if the program does not exist in System32, but it does in sysnative.
+            // Return sysnative program
+            if (program.toLowerCase().startsWith(oldPath.toLowerCase()) &&
+                !await fs.exists(program) && await fs.exists(newProgram)) {
 
-                    return newProgram;
-                }
+                return newProgram;
             }
+        }
 
-            // Return original program and let it fall through
-            return program;
-        });
+        // Return original program and let it fall through
+        return program;
     }
 
     // Note: osPlatform is passed as an argument for testing.

@@ -5,12 +5,12 @@
 
 import * as fs from 'fs';
 import * as https from 'https';
-import * as mkdirp from 'mkdirp';
+import * as mkdirp from 'mkdirp'; 
 import * as path from 'path';
 import * as tmp from 'tmp';
-import { parse as parseUrl } from 'url';
-import * as yauzl from 'yauzl';
 import * as util from './common';
+import * as yauzl from 'yauzl';
+import { parse as parseUrl } from 'url';
 import { PlatformInformation } from './platform';
 import { getProxyAgent } from './proxy';
 import { DownloadSuccess, DownloadStart, DownloadFailure, DownloadProgress, InstallationProgress, DownloadFallBack, DownloadSizeObtained } from './omnisharp/loggingEvents';
@@ -293,7 +293,7 @@ async function installPackage(pkg: Package, eventStream: EventStream): Promise<v
 
                 if (entry.fileName.endsWith('/')) {
                     // Directory - create it
-                    mkdirp(absoluteEntryPath, { mode: 0o775 }, err => {
+                    mkdirp(absoluteEntryPath, { mode: 0o775 }, (err) => {
                         if (err) {
                             return reject(new PackageError('Error creating directory for zip directory entry:' + err.code || '', pkg, err));
                         }
@@ -308,7 +308,7 @@ async function installPackage(pkg: Package, eventStream: EventStream): Promise<v
                             return reject(new PackageError('Error reading zip stream', pkg, err));
                         }
 
-                        mkdirp(path.dirname(absoluteEntryPath), { mode: 0o775 }, err => {
+                        mkdirp(path.dirname(absoluteEntryPath), { mode: 0o775 }, (err: Error) => {
                             if (err) {
                                 return reject(new PackageError('Error creating directory for zip file entry', pkg, err));
                             }
