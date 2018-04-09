@@ -58,17 +58,19 @@ export class PackageManager {
     }
 
     public async DownloadPackages(eventStream: EventStream, status: Status, proxy: string, strictSSL: boolean): Promise<void> {
-        return this.GetPackages()
-            .then(async packages => {
-                return util.buildPromiseChain(packages, async pkg => maybeDownloadPackage(pkg, eventStream, status, proxy, strictSSL));
-            });
+        const packages = await this.GetPackages();
+
+        for (let pkg of packages) {
+            await maybeDownloadPackage(pkg, eventStream, status, proxy, strictSSL);
+        }
     }
 
     public async InstallPackages(eventStream: EventStream, status: Status): Promise<void> {
-        return this.GetPackages()
-            .then(async packages => {
-                return util.buildPromiseChain(packages, async pkg => installPackage(pkg, eventStream, status));
-            });
+        const packages = await this.GetPackages();
+
+        for (let pkg of packages) {
+            await installPackage(pkg, eventStream, status);
+        }
     }
 
     private async GetAllPackages(): Promise<Package[]> {
@@ -92,20 +94,19 @@ export class PackageManager {
     }
 
     private async GetPackages(): Promise<Package[]> {
-        return this.GetAllPackages()
-            .then(list => {
-                return list.filter(pkg => {
-                    if (pkg.architectures && pkg.architectures.indexOf(this.platformInfo.architecture) === -1) {
-                        return false;
-                    }
+        const allPackages = await this.GetAllPackages();
 
-                    if (pkg.platforms && pkg.platforms.indexOf(this.platformInfo.platform) === -1) {
-                        return false;
-                    }
+        return allPackages.filter(pkg => {
+            if (pkg.architectures && pkg.architectures.indexOf(this.platformInfo.architecture) === -1) {
+                return false;
+            }
 
-                    return true;
-                });
-            });
+            if (pkg.platforms && pkg.platforms.indexOf(this.platformInfo.platform) === -1) {
+                return false;
+            }
+
+            return true;
+        });
     }
 
     public SetVersionPackagesForDownload(packages: Package[]) {
@@ -157,23 +158,22 @@ function getNoopStatus(): Status {
 }
 
 async function maybeDownloadPackage(pkg: Package, eventStream: EventStream, status: Status, proxy: string, strictSSL: boolean): Promise<void> {
-    return doesPackageTestPathExist(pkg).then(async (exists: boolean) => {
-        if (!exists) {
-            return downloadPackage(pkg, eventStream, status, proxy, strictSSL);
-        } else {
-            eventStream.post(new DownloadSuccess(`Skipping package '${pkg.description}' (already downloaded).`));
-        }
-    });
+    const exists = await doesPackageTestPathExist(pkg);
+    if (!exists) {
+        await downloadPackage(pkg, eventStream, status, proxy, strictSSL);
+    } else {
+        eventStream.post(new DownloadSuccess(`Skipping package '${pkg.description}' (already downloaded).`));
+    }
 }
 
 async function downloadPackage(pkg: Package, eventStream: EventStream, status: Status, proxy: string, strictSSL: boolean): Promise<void> {
     status = status || getNoopStatus();
 
-    eventStream.post(new DownloadStart(`Downloading package '${pkg.description}' ` ));
+    eventStream.post(new DownloadStart(`Downloading package '${pkg.description}' `));
     status.setMessage("$(cloud-download) Downloading packages");
     status.setDetail(`Downloading package '${pkg.description}'...`);
 
-    return new Promise<tmp.SynchrounousResult>((resolve, reject) => {
+    const tmpResult = await new Promise<tmp.SynchrounousResult>((resolve, reject) => {
         tmp.file({ prefix: 'package-' }, (err, path, fd, cleanupCallback) => {
             if (err) {
                 return reject(new PackageError('Error from tmp.file', pkg, err));
@@ -181,26 +181,30 @@ async function downloadPackage(pkg: Package, eventStream: EventStream, status: S
 
             resolve(<tmp.SynchrounousResult>{ name: path, fd: fd, removeCallback: cleanupCallback });
         });
-    }).then(async tmpResult => {
-        pkg.tmpFile = tmpResult;
+    });
 
-        let result = downloadFile(pkg.url, pkg, eventStream, status, proxy, strictSSL)
-            .then(() => eventStream.post(new DownloadSuccess(` Done!` )));
+    pkg.tmpFile = tmpResult;
+
+    try {
+        await downloadFile(pkg.url, pkg, eventStream, status, proxy, strictSSL);
+        eventStream.post(new DownloadSuccess(` Done!`));
+    }
+    catch (primaryUrlError) {
 
         // If the package has a fallback Url, and downloading from the primary Url failed, try again from 
         // the fallback. This is used for debugger packages as some users have had issues downloading from
         // the CDN link.
         if (pkg.fallbackUrl) {
-            result = result.catch(async (primaryUrlError) => {
-                eventStream.post(new DownloadStart(`\tRetrying from '${pkg.fallbackUrl}' `));
-                return downloadFile(pkg.fallbackUrl, pkg, eventStream, status, proxy, strictSSL)
-                    .then(() => eventStream.post(new DownloadSuccess(' Done!' )))
-                    .catch(() => primaryUrlError);
-            });
+            eventStream.post(new DownloadStart(`\tRetrying from '${pkg.fallbackUrl}' `));
+            try {
+                await downloadFile(pkg.fallbackUrl, pkg, eventStream, status, proxy, strictSSL);
+                eventStream.post(new DownloadSuccess(' Done!'))
+            }
+            catch (fallbackUrlError) {
+                throw primaryUrlError;
+            }
         }
-
-        return result;
-    });
+    }
 }
 
 async function downloadFile(urlString: string, pkg: Package, eventStream: EventStream, status: Status, proxy: string, strictSSL: boolean): Promise<void> {
@@ -226,7 +230,7 @@ async function downloadFile(urlString: string, pkg: Package, eventStream: EventS
 
             if (response.statusCode != 200) {
                 // Download failed - print error message
-                eventStream.post(new DownloadFailure(`failed (error code '${response.statusCode}')` ));
+                eventStream.post(new DownloadFailure(`failed (error code '${response.statusCode}')`));
                 return reject(new PackageError(response.statusCode.toString(), pkg));
             }
 
@@ -236,7 +240,7 @@ async function downloadFile(urlString: string, pkg: Package, eventStream: EventS
             let downloadPercentage = 0;
             let tmpFile = fs.createWriteStream(null, { fd: pkg.tmpFile.fd });
 
-            eventStream.post(new DownloadStart(`(${Math.ceil(packageSize / 1024)} KB) ` ));
+            eventStream.post(new DownloadStart(`(${Math.ceil(packageSize / 1024)} KB) `));
 
             response.on('data', data => {
                 downloadedBytes += data.length;
@@ -282,7 +286,7 @@ async function installPackage(pkg: Package, eventStream: EventStream, status?: S
     status = status || getNoopStatus();
 
     eventStream.post(new InstallationProgress(installationStage, `Installing package '${pkg.description}'`));
- 
+
     status.setMessage("$(desktop-download) Installing packages...");
     status.setDetail(`Installing package '${pkg.description}'`);
 
