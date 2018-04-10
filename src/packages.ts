@@ -5,7 +5,6 @@
 
 import * as fs from 'fs';
 import * as https from 'https';
-import * as mkdirp from 'mkdirp'; 
 import * as path from 'path';
 import * as tmp from 'tmp';
 import * as util from './common';
@@ -15,6 +14,8 @@ import { PlatformInformation } from './platform';
 import { getProxyAgent } from './proxy';
 import { DownloadSuccess, DownloadStart, DownloadFailure, DownloadProgress, InstallationProgress, DownloadFallBack, DownloadSizeObtained } from './omnisharp/loggingEvents';
 import { EventStream } from './EventStream';
+
+const mkdirp = require('mkdirp');
 
 export interface Package {
     description: string;
@@ -293,7 +294,7 @@ async function installPackage(pkg: Package, eventStream: EventStream): Promise<v
 
                 if (entry.fileName.endsWith('/')) {
                     // Directory - create it
-                    mkdirp(absoluteEntryPath, { mode: 0o775 }, (err) => {
+                    mkdirp(absoluteEntryPath, { mode: 0o775 }, (err: NodeJS.ErrnoException) => {
                         if (err) {
                             return reject(new PackageError('Error creating directory for zip directory entry:' + err.code || '', pkg, err));
                         }

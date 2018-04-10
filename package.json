@@ -65,9 +65,7 @@
     "sourceMap": true,
     "instrument": true
   },
-  "dependencies": {
-    
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.1.2",
     "@types/chai-arrays": "1.0.2",
