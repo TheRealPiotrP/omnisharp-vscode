@@ -24,9 +24,9 @@
   "keywords": [
     "multi-root ready"
   ],
-  "main": "./out/src/main",
+  "main": "./out/main",
   "scripts": {
-    "vscode:prepublish": "tsc -p ./",
+    "vscode:prepublish": "webpack",
     "compile": "tsc -p ./ && gulp tslint",
     "watch": "tsc -watch -p ./",
     "tdd": "mocha --opts ./mocha.opts --watch --watch-extensions ts test/unitTests/**/*.test.ts*",
@@ -46,7 +46,8 @@
     "cov:report:unit": "gulp cov:report:unit",
     "cov:report:integration": "gulp cov:report:integration",
     "unpackage:vsix": "gulp vsix:release:unpackage",
-    "gulp": "gulp"
+    "gulp": "gulp",
+    "webpack": "webpack"
   },
   "nyc": {
     "include": [
@@ -65,6 +66,8 @@
     "instrument": true
   },
   "dependencies": {
+  },
+  "devDependencies": {
     "fs-extra": "^5.0.0",
     "http-proxy-agent": "^2.0.0",
     "https-proxy-agent": "^2.1.1",
@@ -77,9 +80,7 @@
     "tmp": "0.0.33",
     "vscode-debugprotocol": "^1.6.1",
     "vscode-extension-telemetry": "0.0.15",
-    "yauzl": "^2.5.0"
-  },
-  "devDependencies": {
+    "yauzl": "^2.5.0",
     "@types/chai": "^4.1.2",
     "@types/chai-arrays": "1.0.2",
     "@types/chai-as-promised": "^7.1.0",
@@ -123,14 +124,17 @@
     "plist": "^3.0.1",
     "remap-istanbul": "^0.11.0",
     "source-map-support": "^0.5.4",
+    "ts-loader": "^4.2.0",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "tslint-microsoft-contrib": "^5.0.3",
     "tslint-no-unused-expression-chai": "^0.1.3",
-    "typescript": "^2.7.2",
+    "typescript": "^2.8.1",
     "unzip2": "^0.2.5",
     "vsce": "^1.37.6",
-    "vscode": "^1.1.14"
+    "vscode": "^1.1.14",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   },
   "runtimeDependencies": [
     {
