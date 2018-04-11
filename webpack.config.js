@@ -10,6 +10,7 @@ module.exports = {
         amd: 'vscode'
       }
   },
+  mode: "production",
   module: {
     rules: [
       {
@@ -21,7 +22,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'out'),
-    filename: 'main.js'
+    filename: 'main.js',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: [ '.js', '.tsx', '.ts' ],
